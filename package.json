@@ -1,6 +1,6 @@
 {
   "name": "dva-reducer",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "dva reducer helper, redux reducer helper, extend the target prop inside the tree",
   "main": "index.js",
   "scripts": {
