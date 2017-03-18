@@ -14,7 +14,8 @@ npm install dva-reducer --save
 
 #### tests
 ```
-cd some dir/dva-reducer
+git clone https://github.com/peterlevel1/dva-reducer.git someDir/dva-reducer
+cd someDir/dva-reducer
 npm install
 npm run test
 ```
