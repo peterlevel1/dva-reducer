@@ -43,7 +43,7 @@ dva.model({
     // the traditional reducer to update a value:
     // if the nested relation is a little deep,
     // we see the result of code is horrible,
-    // and many bugs shown here, to avoid that you must be careful about the pyramid codes,
+    // and many bugs may show here, to avoid that you must be careful about the pyramid codes,
     // or you would meet some unknown bug
     "add": function(state, action) {
       return {
