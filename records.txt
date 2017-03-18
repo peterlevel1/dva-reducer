@@ -1,0 +1,16 @@
+version: 1.0.9
+2017-03-16:
+  1. add value to the cb
+  2. cursor just walk down, and do not copy those objects
+
+version: 1.1.0
+2017-03-16:
+  1. reset the cursor: the cursor needs to copy those objects,
+     as the bugs show if not to do the copy work when with dva model
+
+version: 1.1.1
+2017-03-16:
+  1. rename cc-update-props to dva-reducer
+  2. add tests
+  3. add README.md sth
+
