@@ -14,8 +14,16 @@
     "dva",
     "redux"
   ],
-  "author": "cc",
-  "license": "ISC",
+  "author": "cc <jserfun@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peterlevel1/dva-reducer.git"
+  },
+  "engines": {
+    "node": ">= 0.10.x",
+    "npm": ">= 1.4.x"
+  },
+  "license": "MIT",
   "dependencies": {
     "extend": "^3.0.0"
   },
