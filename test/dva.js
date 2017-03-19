@@ -20,10 +20,10 @@ var mockCreateDva = function () {
 
   return {
     model: function (opts) {
+      var namespace = opts.namespace
       if (defaultState[namespace]) {
         throw new Error("namespace has already been created by dva.model(): " + namespace)
       }
-      var namespace = opts.namespace
       for (var actionType in opts.reducers) {
         reducers[namespace + "/" + actionType] = opts.reducers[actionType]
       }
