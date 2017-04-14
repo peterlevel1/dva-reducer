@@ -95,4 +95,39 @@ describe("dvaReducer:the returned function[reducer] tests", function () {
 
     done()
   })
+
+  it("when payload and the target are both object, if ensuring to override it, set partial false, but I do not support changing the prop", function () {
+    var sth = {
+      lala: true
+    }
+    var state = {
+      haha: {
+        oo: true
+      }
+    }
+    var action = {
+      payload: sth,
+      partial: false
+    }
+    var reducer = dvaReducer("haha")
+    var nextState = reducer(state, action)
+    assert.deepEqual(nextState.haha, sth, "nextState.haha: " + nextState.haha)
+
+    // ===============================================================
+    sth = {
+      lala: true
+    }
+    state = {
+      haha: {
+        oo: true
+      }
+    }
+    action = {
+      payload: sth,
+    }
+    reducer = dvaReducer("haha")
+    nextState = reducer(state, action)
+    assert.notDeepEqual(nextState.haha, sth, "nextState.haha: " + nextState.haha)
+    assert.deepEqual(nextState.haha, { lala: true, oo: true }, "nextState.haha: " + nextState.haha)
+  })
 })

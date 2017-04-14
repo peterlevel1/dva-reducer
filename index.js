@@ -3,25 +3,30 @@ var extend = require("extend")
 var env = "dev"
 var pSlice = Array.prototype.slice
 var regSplit = /\s+|\./
+var toString = Object.prototype.toString
 
 function isObject(obj) {
   return obj && typeof obj === "object"
 }
 
+function isPlainObject(obj) {
+  return obj && toString.call(obj) === '[object Object]'
+}
+
 function reportValueNotObject(props, prop, value) {
-  console.log("[dvaReducer]: props contains not object value: ")
-  console.log("[" + props.join(", ") + "]")
-  console.log(prop)
-  console.log(value)
+  console.warn("[dvaReducer]: props contains not object value: ")
+  console.warn("[" + props.join(", ") + "]")
+  console.warn(prop)
+  console.warn(value)
 }
 
 function reportStateNotObject(state) {
-  console.log("[dvaReducer]: state is not object")
-  console.log(state)
+  console.warn("[dvaReducer]: state is not object")
+  console.warn(state)
 }
 
 function reportPropsTypeError(props) {
-  console.log(props)
+  console.warn(props)
   throw new Error("[dvaReducer]: props is not array or string, or is array with nothing")
 }
 
@@ -37,26 +42,35 @@ function copy(target) {
  * @param {Object} action prop payload must be provided, and should be an object or array
  */
 function save(state, action) {
-  return copy(state, (action || {}).payload)
+  if (!action || action.payload === void 0) {
+    return state
+  }
+  return copy(state, action.payload)
 }
 
 /**
  * dvaReducer: a factory to make the dva reducer
- * @param {Object|Null} opts if no arg, the reducer would be an save handler
- *   @param {Function} update to update the payload
- *   @param {Array} props [required] the last one of the props is the target prop to be updated
- *   @param {*|Function} defaultValue when payload not provided, defaultValue would be the placeholder
+ * @param {Undefined|Object|String|Array} props [required]
+ * if no arg, the reducer would be an save handler
+ * if props is object, then, [defaultValue], [update], [props] would be provided
+ * and the [props] is required
+ * if props is string, it would be splitted into an array
+ * if props is array, it would be used, the last one is the target prop to be updated
+ * @param {*|Function} defaultValue when payload not provided, defaultValue would be the placeholder
+ * @param {Function} update to update the payload
  * @return {Function} reducer
  */
-function dvaReducer(opts) {
-  if (!isObject(opts)) {
+function dvaReducer(props, defaultValue, update) {
+  if (!arguments.length) {
     return save
   }
 
-  var update = opts.update
-  var props = opts.props || []
-  var defaultValue = opts.defaultValue || null
-  var defaultValueIsFn = defaultValue && typeof defaultValue === "function"
+  if (arguments.length === 1 && isPlainObject(props)) {
+    var opts = props
+    update = opts.update
+    props = opts.props
+    defaultValue = opts.defaultValue
+  }
 
   if (props && typeof props === "string") {
     props = props.split(regSplit)
@@ -67,13 +81,15 @@ function dvaReducer(opts) {
     return
   }
 
-  if (update && typeof update !== "function") {
-    update = null
+  if (typeof update !== "function") {
+    update = void 0
   }
+
+  var defaultValueIsFn = defaultValue && typeof defaultValue === "function"
 
   /**
    * @param {Object|Array} state object is advised for the type of the state
-   * @param {Object} action the action type must be resolved by the upper layer logic
+   * @param {Object} action the action type must be resolved by the upper layer warnic
    *   @param {Boolean} partial default value is true,
    *                            set partial false if ensure to override the prop value
    *                            when payload and the action are both object
@@ -99,7 +115,7 @@ function dvaReducer(opts) {
     var prop
     var value
 
-    if (partial == null) {
+    if (partial === void 0) {
       partial = true
     }
 
@@ -119,6 +135,12 @@ function dvaReducer(opts) {
           payload = update(state, payload, value)
         }
 
+        // TODO no change, so state should not be updated
+        // reducer is to update the state, we should lessen the operation of this kind
+        if (value === payload) {
+          return state
+        }
+
         if (
           partial &&
           isObject(value) &&
@@ -126,7 +148,7 @@ function dvaReducer(opts) {
         ) {
           cursor[prop] = copy(value, payload)
         } else {
-          cursor[prop] = payload == null
+          cursor[prop] = payload === void 0
             ? defaultValueIsFn
               ? defaultValue()
               : defaultValue
